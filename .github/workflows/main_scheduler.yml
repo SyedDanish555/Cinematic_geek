@@ -1,0 +1,26 @@
+name: Schedule and Manually Trigger main.py Execution
+
+on:
+  schedule:
+    - cron: '0 */5 * * *'  # Runs at the start of every 5th hour
+  workflow_dispatch:  # Allows manual triggering from the GitHub UI
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'  # Or any Python version you need
+
+      - name: Install dependencies (if any)
+        run: |
+          pip install -r requirements.txt  # If you have a requirements.txt file
+          #  Add other installation commands here if needed
+
+      - name: Execute main.py
+        run: python main.py
