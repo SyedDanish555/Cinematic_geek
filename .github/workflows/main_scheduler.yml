@@ -1,26 +1,27 @@
-name: Schedule and Manually Trigger main.py Execution
+name: Run main.py every 5 hours
 
 on:
   schedule:
-    - cron: '0 */5 * * *'  # Runs at the start of every 5th hour
-  workflow_dispatch:  # Allows manual triggering from the GitHub UI
+    - cron: '0 */5 * * *'  # Runs every 5 hours
+  workflow_dispatch:       # Allows manual trigger
 
 jobs:
-  build:
+  run-script:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.9'  # Or any Python version you need
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
 
-      - name: Install dependencies (if any)
-        run: |
-          pip install -r requirements.txt  # If you have a requirements.txt file
-          #  Add other installation commands here if needed
+    - name: Install tweepy
+      run: |
+        pip install tweepy
 
-      - name: Execute main.py
-        run: python main.py
+    - name: Run main.py
+      run: |
+        python main.py
