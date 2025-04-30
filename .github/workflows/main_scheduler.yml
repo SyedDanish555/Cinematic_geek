@@ -1,0 +1,27 @@
+name: Run main.py every 5 hours
+
+on:
+  schedule:
+    - cron: '0 */5 * * *'  # Runs every 5 hours
+  workflow_dispatch:       # Allows manual trigger
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+
+    - name: Install tweepy
+      run: |
+        pip install tweepy
+
+    - name: Run main.py
+      run: |
+        python main.py
