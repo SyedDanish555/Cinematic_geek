@@ -2,7 +2,7 @@ name: Run main.py every 5 hours
 
 on:
   schedule:
-    - cron: '0 */5 * * *'  # Runs every 5 hours
+    - cron: '0 */8 * * *'  # Runs every 8 hours
   workflow_dispatch:       # Allows manual trigger
 
 jobs:
