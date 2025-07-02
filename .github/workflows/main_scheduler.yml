@@ -1,4 +1,4 @@
-'''name: Run main.py every 5 hours
+name: Run main.py every 5 hours
 
 on:
   schedule:
@@ -25,4 +25,3 @@ jobs:
     - name: Run main.py
       run: |
         python main.py
-'''
