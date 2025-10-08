@@ -1,6 +1,7 @@
 import os
 import random
 import tweepy
+import time
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -13,38 +14,55 @@ bearer_token = os.getenv("TWITTER_BEARER_TOKEN")
 access_token = os.getenv("TWITTER_ACCESS_TOKEN")
 access_token_secret = os.getenv("TWITTER_ACCESS_TOKEN_SECRET")
 
-def get_random_image_path(image_folder):
-    """Gets a random image path from the specified folder."""
-    images = [os.path.join(image_folder, image) for image in os.listdir(image_folder) if os.path.isfile(os.path.join(image_folder, image))]
-    if not images:
-        raise Exception("No images found in folder")
-    return random.choice(images)
+def get_random_media_path(folder):
+    """Gets a random media (image/gif/video) path from the specified folder."""
+    media_extensions = ('.jpg', '.jpeg', '.png', '.gif', '.mp4', '.mov')
+    media_files = [
+        os.path.join(folder, f) for f in os.listdir(folder)
+        if os.path.isfile(os.path.join(folder, f)) and f.lower().endswith(media_extensions)
+    ]
+    if not media_files:
+        raise Exception("No media files found in folder")
+    return random.choice(media_files)
+
+def is_video(file_path):
+    """Check if the file is a video based on its extension."""
+    video_extensions = ('.mp4', '.mov')
+    return file_path.lower().endswith(video_extensions)
 
 def tweet_random_movie(api, client):
-    """Selects a random movie folder, chooses a random image, and tweets it."""
+    """Selects a random movie folder, chooses a random media, and tweets it."""
     movie_folders = [f for f in os.listdir("db") if os.path.isdir(os.path.join("db", f))]
     if not movie_folders:
         raise Exception("No movie folders found")
     random_folder = random.choice(movie_folders)
-    image_path = get_random_image_path(os.path.join("db", random_folder))
+    media_path = get_random_media_path(os.path.join("db", random_folder))
     movie_name = random_folder
 
-    # Upload the image and get the media ID
     try:
-        media = api.media_upload(filename=image_path)
+        # Handle video upload differently from images/GIFs
+        if is_video(media_path):
+            media = api.media_upload(
+                filename=media_path,
+                media_category='tweet_video'
+            )
+            # Wait for video processing
+            while media.processing_info['state'] in ['pending', 'in_progress']:
+                time.sleep(media.processing_info.get('check_after_secs', 3))
+                media = api.get_media_upload_status(media.media_id)
+        else:
+            # Handle images and GIFs
+            media = api.media_upload(filename=media_path)
+        
         media_id = media.media_id_string
-        print(f"Image uploaded successfully. Media ID: {media_id}")
-    except Exception as e:
-        print(f"Error uploading media: {e}")
-        return
+        print(f"Media uploaded successfully. Media ID: {media_id}")
 
-    # Tweet the movie name with the image using Twitter API v2
-    status = f'{movie_name}'
-    try:
+        # Tweet with the media
+        status = f'{movie_name}'
         client.create_tweet(text=status, media_ids=[media_id])
-        print("Successfully tweeted a random movie.")
+        print("Successfully tweeted a random movie media.")
     except Exception as e:
-        print(f"Error tweeting: {e}")
+        print(f"Error processing media or tweeting: {e}")
 
 if __name__ == "__main__":
     # Authenticate with Twitter for API v1.1 (for media upload)
