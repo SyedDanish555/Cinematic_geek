@@ -1,13 +1,17 @@
 import os
 import random
 import tweepy
+from dotenv import load_dotenv
 
-# Your Twitter API credentials
-api_key = "RDXQbuKaR54G76b19cfy5AYsG"
-api_secret = "9p3S583MpL6QW3JLkemF0huhAqW4zguHLNzxbB7payLqC9zUqp"
-bearer_token = "AAAAAAAAAAAAAAAAAAAAAHg2uQEAAAAARzxFcNX1xAwlDl%2BQeAKeslKYdGA%3DlCiW1jOIzAucYTiQGfvadxxkBgXGB5YwOtVnMK8XkDj6jLRb8v"
-access_token = "1717632272038576128-KID7HyB2RqLDk3jHGod1p1sEJ5lYxU"
-access_token_secret = "yhxTrqiW1p3jfYwtcpNKhP3E3ZyyxmCAdxEaaLAalCZ5N"
+# Load environment variables
+load_dotenv()
+
+# Get Twitter API credentials from environment variables
+api_key = os.getenv("TWITTER_API_KEY")
+api_secret = os.getenv("TWITTER_API_SECRET")
+bearer_token = os.getenv("TWITTER_BEARER_TOKEN")
+access_token = os.getenv("TWITTER_ACCESS_TOKEN")
+access_token_secret = os.getenv("TWITTER_ACCESS_TOKEN_SECRET")
 
 def get_random_image_path(image_folder):
     """Gets a random image path from the specified folder."""
