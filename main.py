@@ -37,7 +37,8 @@ def tweet_random_movie(api, client):
         raise Exception("No movie folders found")
     random_folder = random.choice(movie_folders)
     media_path = get_random_media_path(os.path.join("db", random_folder))
-    movie_name = random_folder
+    # Special handling for the Random folder
+    movie_name = '' if random_folder == 'Random' else random_folder
 
     try:
         # Handle video upload differently from images/GIFs
@@ -57,7 +58,7 @@ def tweet_random_movie(api, client):
         media_id = media.media_id_string
         print(f"Media uploaded successfully. Media ID: {media_id}")
 
-        # Tweet with the media
+        # Tweet with the media (empty text for Random folder)
         status = f'{movie_name}'
         client.create_tweet(text=status, media_ids=[media_id])
         print("Successfully tweeted a random movie media.")
